@@ -284,7 +284,7 @@
 const S = { step: 0, ans: {}, showResult: false };
 
 function calcFine(ref, today) {
-  const days = Math.floor((today - ref - 1) / 86400000);
+  const days = Math.floor((today - ref ) / 86400000);
   if (days < 13)  return { days, fine: 0,   st: 'ok',     msg: 'No fine yet — still within the 14-day free window.' };
   if (days < 20)  return { days, fine: 100,  st: 'danger', msg: 'Fine is active. Register Daman immediately.' };
   if (days < 28)  return { days, fine: 200,  st: 'danger', msg: 'Fine is accumulating. Register Daman now.' };
