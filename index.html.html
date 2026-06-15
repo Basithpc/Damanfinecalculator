@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daman Fine Calculator</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0b10;
+    --surface: #13131c;
+    --surface2: #1a1a27;
+    --surface3: #22223a;
+    --border: #252535;
+    --border2: #2e2e50;
+    --purple: #7F77DD;
+    --purple-light: #AFA9EC;
+    --purple-dark: #534AB7;
+    --purple-deep: #3C3489;
+    --purple-fill: #1e1a3a;
+    --text: #e8e8f2;
+    --text2: #9898b0;
+    --text3: #555568;
+    --green: #5DCAA5;
+    --green-bg: #0a1f16;
+    --green-border: #0f6e5640;
+    --amber: #EF9F27;
+    --amber-bg: #1f1700;
+    --amber-border: #85500b40;
+    --red: #F09595;
+    --red-bg: #1a0508;
+    --red-border: #a32d2d40;
+    --font: 'Inter', system-ui, sans-serif;
+    --radius: 12px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.93); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .fade-up { animation: fadeUp 0.36s cubic-bezier(.22,.68,0,1.2) both; }
+  .pop-in  { animation: popIn  0.32s cubic-bezier(.22,.68,0,1.2) both; }
+  .d1 { animation-delay: .04s; }
+  .d2 { animation-delay: .10s; }
+  .d3 { animation-delay: .17s; }
+  .d4 { animation-delay: .24s; }
+  .d5 { animation-delay: .31s; }
+
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #534AB720 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .wordmark {
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: var(--purple);
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .wordmark i { font-size: 14px; }
+
+  .prog-row { display: flex; gap: 6px; margin-bottom: 1.75rem; }
+  .prog-seg {
+    height: 3px; flex: 1; border-radius: 2px;
+    background: var(--border); overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--purple-dark);
+    width: 0;
+    transition: width .45s cubic-bezier(.22,.68,0,1.2);
+  }
+  .prog-seg.done .prog-fill  { width: 100%; background: var(--purple-deep); }
+  .prog-seg.active .prog-fill { width: 100%; }
+
+  .back-btn {
+    background: none; border: none;
+    color: var(--text3); font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 1.25rem; font-family: var(--font);
+    padding: 0; transition: color .15s;
+  }
+  .back-btn:hover { color: var(--purple-light); }
+
+  .q-label {
+    font-size: 11px; letter-spacing: .08em;
+    color: var(--text3); text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+  .question {
+    font-size: 19px; font-weight: 500;
+    color: var(--text); line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+
+  .opts { display: flex; flex-direction: column; gap: 9px; }
+  .opt {
+    display: flex; align-items: center; gap: 13px;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 14px;
+    font-family: var(--font);
+    text-align: left;
+    width: 100%;
+    transition: border-color .16s, background .16s, color .16s, transform .13s;
+  }
+  .opt:hover {
+    border-color: var(--purple-dark);
+    background: #1d1b30;
+    color: var(--text);
+    transform: translateX(4px);
+  }
+  .opt.sel {
+    border-color: var(--purple);
+    background: var(--purple-fill);
+    color: var(--purple-light);
+  }
+  .opt .oicon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--surface3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--purple);
+    flex-shrink: 0; transition: background .16s;
+  }
+  .opt.sel .oicon { background: #2d2660; color: var(--purple-light); }
+  .opt:hover .oicon { background: #251f4a; }
+  .opt-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .opt.sel .opt-sub { color: #7F77DD; }
+
+  .date-hint {
+    font-size: 13px; color: var(--text3);
+    margin-bottom: .75rem; line-height: 1.5;
+  }
+  input[type=date] {
+    width: 100%; padding: 13px 15px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--font);
+    outline: none;
+    transition: border-color .16s;
+    color-scheme: dark;
+  }
+  input[type=date]:focus { border-color: var(--purple-dark); }
+
+  .cta {
+    width: 100%; padding: 14px;
+    font-size: 14px; font-weight: 500;
+    border-radius: var(--radius);
+    cursor: pointer; border: none;
+    background: var(--purple-dark);
+    color: #e8e8f2;
+    font-family: var(--font);
+    letter-spacing: .03em;
+    margin-top: 1.25rem;
+    transition: background .16s, transform .12s;
+  }
+  .cta:hover:not(:disabled) { background: var(--purple); }
+  .cta:active:not(:disabled) { transform: scale(.98); }
+  .cta:disabled { background: var(--surface3); color: var(--text3); cursor: not-allowed; }
+
+  .result-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; letter-spacing: .08em;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--purple-fill); color: var(--purple);
+    border: 1px solid var(--border2);
+    margin-bottom: 1rem; text-transform: uppercase;
+  }
+  .result-meta { font-size: 13px; color: var(--text3); margin-bottom: 1.25rem; }
+
+  .alert-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 15px; border-radius: var(--radius);
+    font-size: 14px; margin-bottom: 1.25rem;
+    line-height: 1.4;
+  }
+  .alert-bar i { font-size: 17px; flex-shrink: 0; }
+  .alert-ok     { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+  .alert-warn   { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .alert-danger { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 9px; margin-bottom: 1.25rem;
+  }
+  .stat {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: .875rem 1rem;
+  }
+  .stat-label { font-size: 11px; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: .5rem; }
+  .stat-val   { font-size: 26px; font-weight: 500; color: var(--text); line-height: 1; }
+  .stat-unit  { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+  .fine-display {
+    background: var(--purple-fill); border: 1px solid var(--border2);
+    border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+    display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .fine-label  { font-size: 11px; color: var(--purple); letter-spacing: .06em; text-transform: uppercase; margin-bottom: .35rem; }
+  .fine-amount { font-size: 34px; font-weight: 500; color: var(--purple-light); letter-spacing: -.01em; }
+  .fine-currency { font-size: 17px; color: var(--purple); margin-left: 4px; }
+
+  .reset-btn {
+    width: 100%; padding: 12px;
+    font-size: 14px; border-radius: var(--radius);
+    cursor: pointer; border: 1px solid var(--border);
+    background: transparent; color: var(--text3);
+    font-family: var(--font);
+    transition: border-color .16s, color .16s;
+  }
+  .reset-btn:hover { border-color: var(--purple-dark); color: var(--purple-light); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up, .pop-in { animation: none; }
+    .prog-fill { transition: none; }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 1.5rem 1.25rem; }
+    .question { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="app"></div>
+
+<script>
+const S = { step: 0, ans: {}, showResult: false };
+
+function calcFine(ref, today) {
+  const days = Math.floor((today - ref) / 86400000);
+  if (days < 14)  return { days, fine: 0,   st: 'ok',     msg: 'No fine yet — still within the 14-day free window.' };
+  if (days < 21)  return { days, fine: 100,  st: 'danger', msg: 'Fine is active. Register Daman immediately.' };
+  if (days < 29)  return { days, fine: 200,  st: 'danger', msg: 'Fine is accumulating. Register Daman now.' };
+  const extra = Math.floor((days - 29) / 30);
+  return { days, fine: 300 + (extra * 300), st: 'danger', msg: 'Fine is growing every month. Act immediately.' };
+}
+
+function calcRenew(exp, today) {
+  const days = Math.floor((today - exp) / 86400000);
+  if (days <= 0)  return { days: 0, fine: 0, st: 'ok',   msg: 'Not expired yet — no fine applicable.' };
+  if (days <= 30) return { days,    fine: 0, st: 'warn', msg: 'Within the 1-month free grace period. Renew soon to avoid fines.' };
+  const months = Math.ceil((days - 30) / 30);
+  return { days, fine: months * 300, st: 'danger', msg: 'Fine is active. Renew Daman immediately.' };
+}
+
+function refQ() {
+  const v = S.ans.vtype;
+  return (v === 'visit' || v === 'other_emir')
+    ? 'What is the Change Status (CS) date?'
+    : 'What is the UAE entry date on the passport?';
+}
+function refHint() {
+  const v = S.ans.vtype;
+  return (v === 'visit' || v === 'other_emir')
+    ? 'Fine starts on the 14th day after change status.'
+    : 'Fine starts on the 14th day after entry.';
+}
+
+function steps() {
+  const base = [{
+    id: 'type', q: 'Is this a new Daman or a renewal?', choices: [
+      { val: 'new',   icon: 'ti-file-plus', label: 'New registration', sub: 'First time getting Daman' },
+      { val: 'renew', icon: 'ti-refresh',   label: 'Renewal',          sub: 'Already had Daman before' },
+    ]
+  }];
+  if (!S.ans.type) return base;
+  if (S.ans.type === 'renew') return [...base, {
+    id: 'exp', q: 'What is the Daman expiry date?', type: 'date',
+    hint: '1-month free grace period applies after expiry, then 300 AED per month.'
+  }];
+  return [...base,
+    {
+      id: 'vtype', q: 'How did the person enter the UAE?', choices: [
+        { val: 'visit',       icon: 'ti-passport',             label: 'Visit visa',                      sub: 'Changed status with a sponsor here' },
+        { val: 'ad_work',     icon: 'ti-building-community',   label: 'Abu Dhabi work visa',             sub: 'Entered UAE with Abu Dhabi visa' },
+        { val: 'other_emir',  icon: 'ti-map-pin',              label: 'Other emirate → Abu Dhabi',       sub: 'Cancelled previous visa, got Abu Dhabi visa' },
+        { val: 'ad_reissue',  icon: 'ti-refresh',              label: 'Abu Dhabi visa — cancelled & reissued', sub: 'Had AD visa, cancelled it, got a new one' },
+      ]
+    },
+    { id: 'ref', q: refQ(), type: 'date', hint: refHint() },
+  ];
+}
+
+function total()  { return steps().length; }
+function cur()    { return steps()[S.step]; }
+function isLast() { return S.step === total() - 1; }
+
+function render() {
+  const app = document.getElementById('app');
+  if (S.showResult) { renderResult(app); return; }
+  const step = cur();
+  if (!step) return;
+  const all = steps();
+
+  let prog = '<div class="prog-row">';
+  all.forEach((_, i) => {
+    const cls = i < S.step ? 'done' : i === S.step ? 'active' : '';
+    prog += `<div class="prog-seg ${cls}"><div class="prog-fill"></div></div>`;
+  });
+  prog += '</div>';
+
+  const back = S.step > 0
+    ? `<button class="back-btn" onclick="goBack()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>`
+    : '';
+
+  const header = `
+    <div class="q-label fade-up d1">Step ${S.step + 1} of ${all.length}</div>
+    <p class="question fade-up d2">${typeof step.q === 'function' ? step.q() : step.q}</p>
+  `;
+
+  let body = '';
+  if (step.type === 'date') {
+    const v = S.ans[step.id] || '';
+    const today = new Date().toISOString().slice(0, 10);
+    body = `
+      <div class="fade-up d3">
+        ${step.hint ? `<p class="date-hint">${step.hint}</p>` : ''}
+        <input type="date" value="${v}" max="${today}" onchange="setDate('${step.id}', this.value)" id="dp"/>
+      </div>
+      <button class="cta fade-up d4" ${!S.ans[step.id] ? 'disabled' : ''} id="calcbtn" onclick="calculate()">
+        Calculate fine
+      </button>`;
+  } else {
+    body = '<div class="opts">';
+    step.choices.forEach((c, i) => {
+      const sel = S.ans[step.id] === c.val ? ' sel' : '';
+      const nameColor = sel ? 'color:#AFA9EC' : 'color:#c0c0d0';
+      body += `
+        <button class="opt fade-up d${Math.min(i + 2, 5)}${sel}" onclick="choose('${step.id}','${c.val}')">
+          <div class="oicon"><i class="ti ${c.icon}" aria-hidden="true"></i></div>
+          <div>
+            <div style="font-size:14px;font-weight:500;${nameColor}">${c.label}</div>
+            <div class="opt-sub">${c.sub}</div>
+          </div>
+        </button>`;
+    });
+    body += '</div>';
+    if (isLast()) {
+      body += `<button class="cta" onclick="calculate()" ${!S.ans[step.id] ? 'disabled' : ''}>Calculate fine</button>`;
+    }
+  }
+
+  app.innerHTML = `
+    <div class="wordmark"><i class="ti ti-shield-check" aria-hidden="true"></i> Daman fine calculator</div>
+    ${prog}${back}${header}${body}`;
+}
+
+function choose(key, val) {
+  S.ans[key] = val;
+  if (key === 'type' || key === 'vtype') {
+    setTimeout(() => { S.step++; render(); }, 160);
+    return;
+  }
+  if (!isLast()) { S.step++; render(); return; }
+  render();
+}
+
+function setDate(key, val) {
+  S.ans[key] = val;
+  const btn = document.getElementById('calcbtn');
+  if (btn) btn.disabled = !val;
+}
+
+function goBack() { S.step = Math.max(0, S.step - 1); render(); }
+
+function calculate() { S.showResult = true; render(); }
+
+function renderResult(app) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  let res, ctx, dateStr;
+
+  if (S.ans.type === 'renew') {
+    const exp = new Date(S.ans.exp);
+    res = calcRenew(exp, today);
+    ctx = 'Renewal';
+    dateStr = 'Expiry: ' + exp.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } else {
+    const ref = new Date(S.ans.ref);
+    res = calcFine(ref, today);
+    ctx = {
+      visit:      'Visit visa → CS',
+      ad_work:    'Abu Dhabi work visa',
+      other_emir: 'Other emirate → Abu Dhabi CS',
+      ad_reissue: 'Abu Dhabi visa reissued'
+    }[S.ans.vtype];
+    const dl = (S.ans.vtype === 'visit' || S.ans.vtype === 'other_emir') ? 'CS date' : 'Entry date';
+    dateStr = dl + ': ' + ref.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  const alertCls  = res.st === 'ok' ? 'alert-ok' : res.st === 'warn' ? 'alert-warn' : 'alert-danger';
+  const alertIcon = res.st === 'ok' ? 'ti-circle-check' : res.st === 'warn' ? 'ti-clock' : 'ti-alert-triangle';
+
+  const pct = Math.min(res.days / 180, 1);
+  const circ = 283;
+  const dash = Math.round(circ * (1 - pct));
+  const ringColor = res.st === 'ok' ? '#5DCAA5' : res.st === 'warn' ? '#EF9F27' : '#F09595';
+
+  let stats = '';
+  if (S.ans.type === 'renew') {
+    if (res.st !== 'ok') {
+      const months = res.st === 'danger' ? Math.max(0, Math.ceil((res.days - 30) / 30)) : 0;
+      stats = `<div class="stat-grid">
+        <div class="stat pop-in d1"><div class="stat-label">Days since expiry</div><div class="stat-val">${res.days}</div><div class="stat-unit">days elapsed</div></div>
+        <div class="stat pop-in d2"><div class="stat-label">Chargeable months</div><div class="stat-val">${months}</div><div class="stat-unit">after grace period</div></div>
+      </div>`;
+    }
+  } else {
+    const overdue = Math.max(0, res.days - 14);
+    stats = `<div class="stat-grid">
+      <div class="stat pop-in d1"><div class="stat-label">Days elapsed</div><div class="stat-val">${res.days}</div><div class="stat-unit">since reference date</div></div>
+      <div class="stat pop-in d2"><div class="stat-label">Days overdue</div><div class="stat-val">${overdue}</div><div class="stat-unit">past 14-day mark</div></div>
+    </div>`;
+  }
+
+  const fineBlock = res.fine > 0
+    ? `<div class="fine-display pop-in d3">
+        <div>
+          <div class="fine-label">Estimated fine</div>
+          <div class="fine-amount">${res.fine.toLocaleString()}<span class="fine-currency">AED</span></div>
+        </div>
+        <svg width="62" height="62" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#1e1a3a" stroke-width="8"/>
+          <circle cx="50" cy="50" r="45" fill="none" stroke="${ringColor}" stroke-width="8"
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
+            stroke-linecap="round" transform="rotate(-90 50 50)" id="ring"
+            style="transition:stroke-dashoffset 1.1s cubic-bezier(.22,.68,0,1.2)"/>
+          <text x="50" y="56" text-anchor="middle" font-size="17" font-weight="500"
+            fill="${ringColor}" font-family="Inter,sans-serif">${Math.round(pct * 100)}%</text>
+        </svg>
+      </div>`
+    : `<div class="fine-display pop-in d3" style="margin-bottom:1.25rem">
+        <div>
+          <div class="fine-label">Fine</div>
+          <div class="fine-amount" style="color:#5DCAA5">0<span class="fine-currency" style="color:#5DCAA5">AED</span></div>
+        </div>
+        <div style="font-size:13px;color:#555568">no fine applicable</div>
+      </div>`;
+
+  app.innerHTML = `
+    <div class="wordmark"><i class="ti ti-shield-check" aria-hidden="true"></i> Daman fine calculator</div>
+    <div class="result-badge pop-in"><i class="ti ti-flag" aria-hidden="true" style="font-size:12px"></i>${ctx}</div>
+    <p class="result-meta">${dateStr} · as of today</p>
+    <div class="alert-bar ${alertCls} pop-in d1"><i class="ti ${alertIcon}" aria-hidden="true"></i>${res.msg}</div>
+    ${stats}
+    ${fineBlock}
+    <button class="reset-btn pop-in d4" onclick="resetApp()">
+      <i class="ti ti-refresh" aria-hidden="true" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i>
+      Calculate another
+    </button>`;
+
+  setTimeout(() => {
+    const ring = document.getElementById('ring');
+    if (ring) ring.style.strokeDashoffset = dash;
+  }, 80);
+}
+
+function resetApp() { S.step = 0; S.ans = {}; S.showResult = false; render(); }
+
+render();
+</script>
+</body>
+</html>
