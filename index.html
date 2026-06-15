@@ -284,17 +284,19 @@
 const S = { step: 0, ans: {}, showResult: false };
 
 function calcFine(ref, today) {
-  const days = Math.floor((today - ref ) / 86400000);
-  if (days < 13)  return { days, fine: 0,   st: 'ok',     msg: 'No fine yet — still within the 14-day free window.' };
-  if (days < 20)  return { days, fine: 100,  st: 'danger', msg: 'Fine is active. Register Daman immediately.' };
-  if (days < 28)  return { days, fine: 200,  st: 'danger', msg: 'Fine is accumulating. Register Daman now.' };
-  const extra = Math.floor((days - 28) / 30);
+  const rawDays = Math.floor((today - ref) / 86400000);
+  const days = rawDays + 1; // day of arrival = Day 1
+  if (days < 14)  return { days, fine: 0,   st: 'ok',     msg: 'No fine yet — still within the 14-day free window.' };
+  if (days < 21)  return { days, fine: 100,  st: 'danger', msg: 'Fine is active. Register Daman immediately.' };
+  if (days < 29)  return { days, fine: 200,  st: 'danger', msg: 'Fine is accumulating. Register Daman now.' };
+  const extra = Math.floor((days - 29) / 30);
   return { days, fine: 300 + (extra * 300), st: 'danger', msg: 'Fine is growing every month. Act immediately.' };
 }
 
 function calcRenew(exp, today) {
-  const days = Math.floor((today - exp) / 86400000);
-  if (days <= 0)  return { days: 0, fine: 0, st: 'ok',   msg: 'Not expired yet — no fine applicable.' };
+  const rawDays = Math.floor((today - exp) / 86400000);
+  const days = rawDays + 1; // expiry day = Day 1
+  if (days <= 1)  return { days: 0, fine: 0, st: 'ok',   msg: 'Not expired yet — no fine applicable.' };
   if (days <= 30) return { days,    fine: 0, st: 'warn', msg: 'Within the 1-month free grace period. Renew soon to avoid fines.' };
   const months = Math.ceil((days - 30) / 30);
   return { days, fine: months * 300, st: 'danger', msg: 'Fine is active. Renew Daman immediately.' };
@@ -462,7 +464,7 @@ function renderResult(app) {
       </div>`;
     }
   } else {
-    const overdue = Math.max(0, res.days - 13);
+    const overdue = Math.max(0, res.days - 14);
     stats = `<div class="stat-grid">
       <div class="stat pop-in d1"><div class="stat-label">Days elapsed</div><div class="stat-val">${res.days}</div><div class="stat-unit">since reference date</div></div>
       <div class="stat pop-in d2"><div class="stat-label">Days overdue</div><div class="stat-val">${overdue}</div><div class="stat-unit">past 14-day mark</div></div>
